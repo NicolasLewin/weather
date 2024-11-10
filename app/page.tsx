@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { ThemeToggle } from "./theme-provider";
@@ -20,7 +21,7 @@ export default function Home() {
   async function fetchData(cityName: string) {
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:3000/api/weather?address=" + cityName);
+      const response = await fetch("/api/weather?address=" + cityName);
       const jsonData = (await response.json()).data;
       setWeatherData(jsonData);
     } catch (e) {
@@ -32,7 +33,7 @@ export default function Home() {
 
   async function fetchDataByCoordinates(latitude: number, longitude: number) {
     try {
-      const response = await fetch(`http://localhost:3000/api/weather?lat=${latitude}&lon=${longitude}`);
+      const response = await fetch(`/api/weather?lat=${latitude}&lon=${longitude}`);
       const jsonData = (await response.json()).data;
       setWeatherData(jsonData);
     } catch (e) {

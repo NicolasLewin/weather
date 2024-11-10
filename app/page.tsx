@@ -6,7 +6,7 @@ import { ThemeToggle } from "./theme-provider";
 
 function getCurrentDate() {
   const currentDate = new Date();
-  const options = { month: "long" };
+  const options = { month: "long" as const };
   const monthName = currentDate.toLocaleString("fr-FR", options);
   const date = new Date().getDate() + ", " + monthName;
   return date;
@@ -56,7 +56,7 @@ export default function Home() {
         }
       );
     }
-  }, []);
+  }, [city]);
 
   return (
     <div>

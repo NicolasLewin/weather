@@ -4,6 +4,42 @@ import React, { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { ThemeToggle } from "./theme-provider";
 
+interface WeatherCondition {
+  id: number;
+  main: string;
+  description: string;
+  icon: string;
+}
+
+interface MainWeatherData {
+  temp: number;
+  feels_like: number;
+  temp_min: number;
+  temp_max: number;
+  pressure: number;
+  humidity: number;
+}
+
+interface Wind {
+  speed: number;
+  deg: number;
+}
+
+interface Coordinates {
+  lon: number;
+  lat: number;
+}
+
+interface WeatherApiResponse {
+  data: {
+    coord: Coordinates;
+    weather: WeatherCondition[];
+    main: MainWeatherData;
+    wind: Wind;
+    name: string;
+  }
+}
+
 function getCurrentDate() {
   const currentDate = new Date();
   const options = { month: "long" as const };
@@ -14,7 +50,7 @@ function getCurrentDate() {
 
 export default function Home() {
   const date = getCurrentDate();
-  const [weatherData, setWeatherData] = useState(null);
+  const [weatherData, setWeatherData] = useState<WeatherApiResponse['data'] | null>(null);
   const [city, setCity] = useState("paris");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -22,8 +58,8 @@ export default function Home() {
     setIsLoading(true);
     try {
       const response = await fetch("/api/weather?address=" + cityName);
-      const jsonData = (await response.json()).data;
-      setWeatherData(jsonData);
+      const jsonData: WeatherApiResponse = await response.json();
+      setWeatherData(jsonData.data);
     } catch (e) {
       console.error("Error while fetching:", e);
     } finally {
@@ -34,8 +70,8 @@ export default function Home() {
   async function fetchDataByCoordinates(latitude: number, longitude: number) {
     try {
       const response = await fetch(`/api/weather?lat=${latitude}&lon=${longitude}`);
-      const jsonData = (await response.json()).data;
-      setWeatherData(jsonData);
+      const jsonData: WeatherApiResponse = await response.json();
+      setWeatherData(jsonData.data);
     } catch (e) {
       console.error("Error while fetching:", e);
     } finally {
@@ -55,6 +91,8 @@ export default function Home() {
           fetchData(city);
         }
       );
+    } else {
+      fetchData(city);
     }
   }, [city]);
 
@@ -97,19 +135,19 @@ export default function Home() {
                 <div className="flex justify-center items-center h-48">
                   <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 dark:border-blue-400 border-t-transparent"></div>
                 </div>
-              ) : weatherData && weatherData.weather && weatherData.weather[0] ? (
+              ) : weatherData && weatherData.weather?.[0] ? (
                 <div className="text-center">
                   <div className="mb-6">
                     <div className="text-6xl font-bold text-gray-800 dark:text-gray-100 mb-2">
-                      {(weatherData?.main?.temp - 273.5).toFixed(1)}°
+                      {(weatherData.main.temp - 273.15).toFixed(1)}°
                     </div>
                     <div className="text-xl text-gray-600 dark:text-gray-300 font-medium">
-                      {weatherData?.weather[0]?.description?.toUpperCase()}
+                      {weatherData.weather[0].description.toUpperCase()}
                     </div>
                   </div>
                   <div className="space-y-2">
                     <div className="text-2xl font-semibold text-gray-700 dark:text-gray-200">
-                      {weatherData?.name}
+                      {weatherData.name}
                     </div>
                     <div className="text-gray-500 dark:text-gray-400">{date}</div>
                   </div>
@@ -117,13 +155,13 @@ export default function Home() {
                     <div className="bg-blue-50 dark:bg-slate-700 p-4 rounded-lg">
                       <div className="text-sm text-gray-500 dark:text-gray-400">Humidity</div>
                       <div className="text-xl font-semibold text-gray-700 dark:text-gray-200">
-                        {weatherData?.main?.humidity}%
+                        {weatherData.main.humidity}%
                       </div>
                     </div>
                     <div className="bg-blue-50 dark:bg-slate-700 p-4 rounded-lg">
                       <div className="text-sm text-gray-500 dark:text-gray-400">Wind Speed</div>
                       <div className="text-xl font-semibold text-gray-700 dark:text-gray-200">
-                        {weatherData?.wind?.speed} m/s
+                        {weatherData.wind.speed} m/s
                       </div>
                     </div>
                   </div>

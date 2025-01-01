@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Search } from "lucide-react";
 import { ThemeToggle } from "./theme-provider";
 
 interface WeatherCondition {
@@ -121,13 +120,6 @@ export default function Home() {
                   name="cityName"
                   onChange={(e) => setCity(e.target.value)}
                 />
-                <button
-                  type="submit"
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-400 focus:outline-none"
-                >
-                  <Search size={20} />
-                  <span className="hidden md:inline">Search</span>
-                </button>
               </form>
             </div>
             <div className="p-6">
